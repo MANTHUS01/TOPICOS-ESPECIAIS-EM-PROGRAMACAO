@@ -1,0 +1,135 @@
+# **Documentação do Script de Transcrição de Áudio com Groq**
+
+## **1. Visão Geral**
+Este script Python oferece uma interface gráfica (GUI) para transcrever arquivos de áudio usando a API da **Groq**, além de fornecer funcionalidades adicionais como:
+- **Tradução automática** (para inglês)
+- **Análise de sentimento** (polaridade e subjetividade)
+- **Reprodução de áudio** (com controle de progresso)
+- **Exportação** para `.txt` ou `.docx`
+- **Temas claro/escuro** (alternância)
+
+---
+
+## **2. Dependências**
+O script utiliza as seguintes bibliotecas:
+```python
+import os
+import tkinter as tk
+from tkinter import filedialog, messagebox, scrolledtext, ttk
+from groq import Groq  # API de transcrição
+import re  # Formatação de texto
+from textblob import TextBlob  # Análise de sentimento
+from translate import Translator  # Tradução
+from docx import Document  # Exportação para Word
+import logging  # Log de erros
+import soundfile as sf  # Leitura de áudio
+import simpleaudio as sa  # Reprodução de áudio
+import threading  # Execução em segundo plano
+```
+
+### **Instalação das Dependências**
+Execute no terminal:
+```bash
+pip install groq textblob translate python-docx soundfile simpleaudio
+```
+
+---
+
+## **3. Funcionalidades Principais**
+
+### **3.1. Transcrição de Áudio**
+- **Formato suportado**: `.mp3`, `.wav`, `.ogg`, `.flac`
+- **Modelo usado**: `whisper-large-v3-turbo` (via Groq)
+- **Recursos**:
+  - Adiciona pontuação automática (vírgulas, pontos finais)
+  - Suporte para português (`language="pt"`)
+
+### **3.2. Tradução**
+- Traduz o texto transcrito para **inglês** usando a biblioteca `translate`.
+
+### **3.3. Análise de Sentimento**
+- Usa `TextBlob` para calcular:
+  - **Polaridade** (positivo/negativo)
+  - **Subjetividade** (objetivo/subjetivo)
+
+### **3.4. Reprodução de Áudio**
+- Permite carregar e reproduzir arquivos de áudio.
+- Barra de progresso em tempo real.
+- Botão para **parar** a reprodução.
+
+### **3.5. Exportação**
+- Salva o texto em:
+  - **Arquivo de texto (.txt)**
+  - **Documento Word (.docx)**
+
+### **3.6. Tema Claro/Escuro**
+- Alterna entre modo claro e escuro para melhor legibilidade.
+
+---
+
+## **4. Estrutura do Código**
+
+### **4.1. Configuração Inicial**
+- **API Key da Groq** (substitua pela sua chave válida).
+- **Log de erros** (`transcricao_errors.log`).
+
+### **4.2. Funções Principais**
+| Função | Descrição |
+|--------|-----------|
+| `formatar_texto()` | Adiciona pontuação ao texto transcrito. |
+| `transcrever_audio()` | Seleciona e transcreve um arquivo de áudio. |
+| `salvar_texto()` | Salva o texto em `.txt` ou `.docx`. |
+| `traduzir_texto()` | Traduz o texto para inglês. |
+| `analisar_sentimento()` | Exibe polaridade e subjetividade. |
+| `alternar_tema()` | Muda entre tema claro/escuro. |
+| `carregar_audio()` | Carrega um arquivo de áudio para reprodução. |
+| `reproduzir_audio()` | Reproduz o áudio em segundo plano. |
+| `parar_audio()` | Interrompe a reprodução. |
+
+### **4.3. Interface Gráfica (GUI)**
+- **Tkinter** para criar a janela principal.
+- **Widgets**:
+  - `ScrolledText` (área de texto rolável)
+  - `Progressbar` (barra de progresso)
+  - Botões para cada funcionalidade.
+
+---
+
+## **5. Execução**
+1. **Instale as dependências** (se ainda não instaladas).
+2. **Execute o script**:
+   ```bash
+   python script.py
+   ```
+3. **Selecione um arquivo de áudio** e utilize os botões para:
+   - Transcrever
+   - Traduzir
+   - Analisar sentimento
+   - Reproduzir áudio
+   - Salvar texto
+
+---
+
+## **6. Observações Importantes**
+⚠️ **API Key Exposta**:  
+O script contém uma chave da Groq (`api_key`). **Nunca compartilhe publicamente**! Recomenda-se usar variáveis de ambiente:
+```python
+import os
+api_key = os.getenv("GROQ_API_KEY")  # Configure no sistema
+```
+
+📌 **Limitações**:
+- Depende da **conexão com a internet** (API Groq).
+- Tradução e análise de sentimento podem não ser perfeitas.
+
+---
+
+## **7. Melhorias Futuras**
+- Adicionar suporte a mais idiomas.
+- Implementar reconhecimento de fala em tempo real.
+- Melhorar tratamento de erros.
+
+---
+
+✅ **Pronto para uso!**  
+Se encontrar problemas, verifique os logs (`transcricao_errors.log`) ou ajuste as dependências.
