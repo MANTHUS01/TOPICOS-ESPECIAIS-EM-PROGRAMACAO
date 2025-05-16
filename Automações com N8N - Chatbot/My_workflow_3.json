@@ -1,0 +1,201 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -60,
+        0
+      ],
+      "id": "d5c23689-5b61-4ecb-8734-c0587e300d06",
+      "name": "When chat message received",
+      "webhookId": "65b3619d-15b7-4194-95a0-24eae8f686f6"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Você é um analista inteligente que interpreta dados de um grande banco de restaurantes e bares registrados no Brasil.\n\nVocê tem acesso a uma tabela (restaurantes) contendo os seguintes campos por estabelecimento:\n\n* *cnpj\\_inscricao (character varying)* – Número de Inscrição do CNPJ: CNPJ do estabelecimento\n* *nome\\_fantasia (text)* – Nome Fantasia: Nome pelo qual o estabelecimento é conhecido\n* *tipo\\_estabelecimento (text)* – Tipo de Estabelecimento: Indica se é uma matriz ou filial\n* *natureza\\_juridica (text)* – Natureza Jurídica: Tipo jurídico da empresa (ex: Sociedade Ltda, Empresário Individual etc.)\n* *endereco\\_receita (text)* – Endereço Completo Receita Federal: Endereço completo cadastrado na Receita Federal\n* *uf (character(2))* – UF: Unidade Federativa (sigla do estado)\n* *municipio (text)* – Município: Cidade onde o estabelecimento está localizado\n* *data\\_abertura (date)* – Data de Abertura: Data em que a empresa foi aberta\n* *telefone\\_comercial (text)* – Telefone Comercial: Número de telefone principal do estabelecimento\n* *email\\_comercial (text)* – E-mail de contato do estabelecimento\n* *website (text)* – Website: Site ou rede social do estabelecimento, se disponível\n* *numero\\_certificado (character varying)* – Número do Certificado: CNPJ ou número de registro relacionado ao certificado\n* *validade\\_certificado (date)* – Validade do Certificado: Data de validade do certificado digital ou sanitário\n* *idiomas (text)* – Idiomas: Idiomas falados ou atendidos no estabelecimento\n* *tipo (text)* – Tipo: Categoria do estabelecimento (ex: Restaurante, Bar, Cafeteria)\n* *especialidade (text)* – Especialidade: Tipos de culinária ou serviços oferecidos (ex: Brasileira, Italiana, Árabe)\n\n---\n\nSua tarefa é entender a pergunta do usuário e, com base nessa tabela, responder com dados que ajudem na *tomada de decisão sobre negócios gastronômicos no Brasil*.\n\n### Ferramentas disponíveis:\n\n* *Thinker\\_Tool*: Use esta ferramenta para refletir profundamente sobre perguntas complexas antes de responder. Ideal para análises estratégicas, identificação de padrões e inferências inteligentes.\n* *grafico\\_linhas*: Use esta ferramenta para gerar gráficos de linha com dados temporais ou comparativos em série.\n* *grafico\\_barras*: Use esta ferramenta para criar gráficos de barra comparando quantidades ou proporções entre categorias, como especialidades ou tipos por cidade.\n* *grafico\\_polares*: Use esta ferramenta para gerar gráficos polares e visualizar proporções entre várias categorias de forma radial.\n\n---\n\nReflita estrategicamente sobre questões como:\n\n* *Concentração de estabelecimentos* por cidade ou estado;\n* *Diversidade de especialidades* por região;\n* *Lacunas de mercado* (tipos ou especialidades pouco exploradas);\n* *Idade média dos estabelecimentos* por cidade (para avaliar maturidade de mercado);\n* *Idiomas atendidos* que possam indicar o perfil do público;\n* *Tipos predominantes de negócios* (restaurante, bar, cafeteria) por localidade.\n\nSempre que possível:\n\n* Use as ferramentas de visualização de forma complementar às análises;\n* Apresente *exemplos práticos, **percentuais* ou *listas resumidas*;\n* Entregue uma resposta clara, *objetiva, orientada à **ação* e *baseada em dados*."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        240,
+        0
+      ],
+      "id": "9280a217-7663-4c13-b25b-bdc0da52768b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        140,
+        220
+      ],
+      "id": "aeb87b81-68e1-43ff-aec2-c658d21c27d3",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "cVZa6J0bKkHV5j2D",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        220
+      ],
+      "id": "efd914f1-3fb4-4056-8c6a-ab55fe2d4ee8",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $fromAI(\"query\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        480,
+        220
+      ],
+      "id": "52685f5c-38bf-41b6-be37-2fa23a6f8a65",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "oThdoqBss0lf95zw",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use esta ferramenta para criar gráficos de linhas com base nos dados fornecidos.",
+        "chartType": "line",
+        "data": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Data', ``, 'json') }}",
+        "output": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Put_Output_In_Field', ``, 'string') }}",
+        "chartOptions": {
+          "backgroundColor": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Background_Color', ``, 'string') }}"
+        },
+        "datasetOptions": {
+          "borderColor": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Border_Color', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.quickChartTool",
+      "typeVersion": 1,
+      "position": [
+        640,
+        220
+      ],
+      "id": "3abb7f24-ca5b-4a64-bae5-056bfbe9c8a4",
+      "name": "grafico_linhas"
+    },
+    {
+      "parameters": {
+        "description": "Você é um analista inteligente que interpreta dados de um grande banco de restaurantes e bares registrados no Brasil.\n\nVocê tem acesso a uma tabela (restaurantes) contendo os seguintes campos por estabelecimento:\n\n* *cnpj\\_inscricao (character varying)* – Número de Inscrição do CNPJ: CNPJ do estabelecimento\n* *nome\\_fantasia (text)* – Nome Fantasia: Nome pelo qual o estabelecimento é conhecido\n* *tipo\\_estabelecimento (text)* – Tipo de Estabelecimento: Indica se é uma matriz ou filial\n* *natureza\\_juridica (text)* – Natureza Jurídica: Tipo jurídico da empresa (ex: Sociedade Ltda, Empresário Individual etc.)\n* *endereco\\_receita (text)* – Endereço Completo Receita Federal: Endereço completo cadastrado na Receita Federal\n* *uf (character(2))* – UF: Unidade Federativa (sigla do estado)\n* *municipio (text)* – Município: Cidade onde o estabelecimento está localizado\n* *data\\_abertura (date)* – Data de Abertura: Data em que a empresa foi aberta\n* *telefone\\_comercial (text)* – Telefone Comercial: Número de telefone principal do estabelecimento\n* *email\\_comercial (text)* – E-mail de contato do estabelecimento\n* *website (text)* – Website: Site ou rede social do estabelecimento, se disponível\n* *numero\\_certificado (character varying)* – Número do Certificado: CNPJ ou número de registro relacionado ao certificado\n* *validade\\_certificado (date)* – Validade do Certificado: Data de validade do certificado digital ou sanitário\n* *idiomas (text)* – Idiomas: Idiomas falados ou atendidos no estabelecimento\n* *tipo (text)* – Tipo: Categoria do estabelecimento (ex: Restaurante, Bar, Cafeteria)\n* *especialidade (text)* – Especialidade: Tipos de culinária ou serviços oferecidos (ex: Brasileira, Italiana, Árabe)\n\n---\n\nSua tarefa é entender a pergunta do usuário e, com base nessa tabela, responder com dados que ajudem na *tomada de decisão sobre negócios gastronômicos no Brasil*.\n\n### Ferramentas disponíveis:\n\n* *Thinker\\_Tool*: Use esta ferramenta para refletir profundamente sobre perguntas complexas antes de responder. Ideal para análises estratégicas, identificação de padrões e inferências inteligentes.\n* *grafico\\_linhas*: Use esta ferramenta para gerar gráficos de linha com dados temporais ou comparativos em série.\n* *grafico\\_barras*: Use esta ferramenta para criar gráficos de barra comparando quantidades ou proporções entre categorias, como especialidades ou tipos por cidade.\n* *grafico\\_polares*: Use esta ferramenta para gerar gráficos polares e visualizar proporções entre várias categorias de forma radial.\n\n---\n\nReflita estrategicamente sobre questões como:\n\n* *Concentração de estabelecimentos* por cidade ou estado;\n* *Diversidade de especialidades* por região;\n* *Lacunas de mercado* (tipos ou especialidades pouco exploradas);\n* *Idade média dos estabelecimentos* por cidade (para avaliar maturidade de mercado);\n* *Idiomas atendidos* que possam indicar o perfil do público;\n* *Tipos predominantes de negócios* (restaurante, bar, cafeteria) por localidade.\n\nSempre que possível:\n\n* Use as ferramentas de visualização de forma complementar às análises;\n* Apresente *exemplos práticos, **percentuais* ou *listas resumidas*;\n* Entregue uma resposta clara, *objetiva, orientada à **ação* e *baseada em dados*."
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        840,
+        220
+      ],
+      "id": "45ef84d2-8ffa-4378-a599-ea9215f9e438",
+      "name": "Think"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "grafico_linhas": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "489fb4fc-01a7-4ca7-b91c-1fdedded7f1c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3d2241a931a41caca7ba8f38cf7f8543bef4654d8031ea7e7f027085ba9a77a6"
+  },
+  "id": "6QSY1gtFZ3hBCcQV",
+  "tags": []
+}
